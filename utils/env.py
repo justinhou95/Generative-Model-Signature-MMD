@@ -1,8 +1,8 @@
 import os
 from typing import Optional, List
 
-import gym
-from gym import spaces
+# import gym
+# from gym import spaces
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -324,58 +324,58 @@ class pm_env():
         num = get_latest_run()
         self.df.to_csv(f'./runs/PPO_{num}/data.csv')
 
-class ksig_mmd_sim(gym.Env, pm_env):
-    '''
-    Portfolio Management Environment
-    Reward is based on log return of weights generated from action
-    Observation is based on window length of prices, current wealth, current position and time to next period
-    '''
-    def __init__(self, n_actions: int, window_len: int, n_periods: int,
-                 max_long: Optional[float]=None, max_short: Optional[float]=None,
-                 baseline_weights: Optional[np.ndarray|List]=None,
-                 verbose: bool=True, df_path: Optional[str]=None, stride: Optional[int]=None,
-                 generator: MA_path_generator=None, hist_len: Optional[int]=None,
-                 trading_calendar: Optional[str]=None,
-                 r: Optional[float]=None, transaction_cost: float=0.,
-                 seed: Optional[int]=None,
-                 device: Optional[torch.device]=torch.device('cpu')):
+# class ksig_mmd_sim(gym.Env, pm_env):
+#     '''
+#     Portfolio Management Environment
+#     Reward is based on log return of weights generated from action
+#     Observation is based on window length of prices, current wealth, current position and time to next period
+#     '''
+#     def __init__(self, n_actions: int, window_len: int, n_periods: int,
+#                  max_long: Optional[float]=None, max_short: Optional[float]=None,
+#                  baseline_weights: Optional[np.ndarray|List]=None,
+#                  verbose: bool=True, df_path: Optional[str]=None, stride: Optional[int]=None,
+#                  generator: MA_path_generator=None, hist_len: Optional[int]=None,
+#                  trading_calendar: Optional[str]=None,
+#                  r: Optional[float]=None, transaction_cost: float=0.,
+#                  seed: Optional[int]=None,
+#                  device: Optional[torch.device]=torch.device('cpu')):
 
-        super().__init__(n_actions, window_len, n_periods, baseline_weights, verbose,
-                         df_path, stride, generator, hist_len, trading_calendar,
-                         r, transaction_cost, seed, device)
+#         super().__init__(n_actions, window_len, n_periods, baseline_weights, verbose,
+#                          df_path, stride, generator, hist_len, trading_calendar,
+#                          r, transaction_cost, seed, device)
 
-        max_long = self.MAX_POS if max_long is None else max_long
-        max_short = self.MIN_POS if max_short is None else max_short
-        self.action_space = spaces.Box(low=max_short, high=max_long, shape=(self.n_actions,), dtype=NP_DTYPE)
-        n_obs_terms = self.n_actions * self.window_len + 2 + self.n_actions # 2 for wealth and dt
-        low = np.zeros((n_obs_terms,), dtype=NP_DTYPE)
-        low[-self.n_actions:] = max_short
-        high = np.inf * np.ones((n_obs_terms,), dtype=NP_DTYPE)
-        high[-self.n_actions:] = max_long
-        self.observation_space = spaces.Box(low=low, high=high, shape=(n_obs_terms,), dtype=NP_DTYPE)
+#         max_long = self.MAX_POS if max_long is None else max_long
+#         max_short = self.MIN_POS if max_short is None else max_short
+#         self.action_space = spaces.Box(low=max_short, high=max_long, shape=(self.n_actions,), dtype=NP_DTYPE)
+#         n_obs_terms = self.n_actions * self.window_len + 2 + self.n_actions # 2 for wealth and dt
+#         low = np.zeros((n_obs_terms,), dtype=NP_DTYPE)
+#         low[-self.n_actions:] = max_short
+#         high = np.inf * np.ones((n_obs_terms,), dtype=NP_DTYPE)
+#         high[-self.n_actions:] = max_long
+#         self.observation_space = spaces.Box(low=low, high=high, shape=(n_obs_terms,), dtype=NP_DTYPE)
 
-    def reset(self):
-        # observation must be a numpy array
-        self.pm_env_reset(self.window_len - 1) # initial price of all 1s can form the first set of values in window_len
-        return self.generate_obs()
+#     def reset(self):
+#         # observation must be a numpy array
+#         self.pm_env_reset(self.window_len - 1) # initial price of all 1s can form the first set of values in window_len
+#         return self.generate_obs()
 
-    def step(self, action):
-        reward, done, info = self.pm_env_step(action)
-        return self.generate_obs(), reward, done, info
+#     def step(self, action):
+#         reward, done, info = self.pm_env_step(action)
+#         return self.generate_obs(), reward, done, info
 
-    def render(self):
-        pass
+#     def render(self):
+#         pass
 
-    def close(self):
-        pass
+#     def close(self):
+#         pass
 
-    def generate_obs(self):
-        # Feed in prices of all assets based on window length and position'
-        if self.data is None:
-            window = np.array(self.episode_path[self.batch_period-(self.window_len-1):self.batch_period+1]).reshape(-1).astype(np.float32)
-        else:
-            window = np.array(self.episode_path[self.real_data_current_period-(self.window_len-1):self.real_data_current_period+1]).reshape(-1).astype(np.float32)
-        # window has shape(window_len * n_actions,)
+#     def generate_obs(self):
+#         # Feed in prices of all assets based on window length and position'
+#         if self.data is None:
+#             window = np.array(self.episode_path[self.batch_period-(self.window_len-1):self.batch_period+1]).reshape(-1).astype(np.float32)
+#         else:
+#             window = np.array(self.episode_path[self.real_data_current_period-(self.window_len-1):self.real_data_current_period+1]).reshape(-1).astype(np.float32)
+#         # window has shape(window_len * n_actions,)
 
-        obs = np.concatenate((window, [self.dt], [self.agent_wealth], self.position), axis=-1)
-        return obs
+#         obs = np.concatenate((window, [self.dt], [self.agent_wealth], self.position), axis=-1)
+#         return obs
