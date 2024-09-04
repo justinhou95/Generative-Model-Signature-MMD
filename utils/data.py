@@ -221,7 +221,7 @@ class MA_path_generator():
 
         # create MA model with data up to start_date but model parameters will be from self.res.params trained during init
         ma_model = arch.arch_model(self.df_gen.loc[:start_date, 'gaussianized'], mean=MEAN_MODEL, p=self.p, q=Q_CONST, rescale=False)
-
+        
         # set distribution of MA model with random state passed in the construction for reproducibility
         ma_model.distribution = Normal(seed=self.rs)
 
