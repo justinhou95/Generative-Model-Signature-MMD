@@ -98,7 +98,7 @@ def get_dataloader(**kwargs):
     df = pd.read_csv('data/spx.csv', index_col=0, parse_dates=True)
     if kwargs.get('bs', False):
         df = pd.read_csv('data/bs.csv', index_col=0, parse_dates=True)
-
+    
     # NOTE: using the same dataset class even when not using MA to ensure reproducibility as MA dataset drops rows due to return calculation
     dataset = MADataset(df, start_date, end_date, sample_len, ma, noise_dim, p, stride, seed)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
