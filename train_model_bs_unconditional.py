@@ -1,26 +1,10 @@
 import numpy as np
 import torch
 torch.set_float32_matmul_precision('high')
+from bs import simulate_BS
 from train import *
 
 device = torch.device('cuda:1') if torch.cuda.is_available() else torch.device('cpu')
-
-
-def simulate_BM(n_sample, dt, n_timestep):
-    noise = torch.randn(size=(n_sample, n_timestep))
-    paths_incr = noise * torch.sqrt(torch.tensor(dt))
-    paths = torch.cumsum(paths_incr, axis=1)
-    BM_paths = torch.cat([torch.zeros((n_sample, 1)), paths], axis=1)
-    BM_paths = BM_paths[..., None]
-    return BM_paths
-
-
-def simulate_BS(n_sample, dt, n_timestep, mu, sigma):
-    time_grid = torch.linspace(0, dt * n_timestep, n_timestep + 1)
-    time_paths = time_grid.expand([n_sample, n_timestep + 1])[..., None]
-    BM_paths = simulate_BM(n_sample, dt, n_timestep)
-    BS_paths = torch.exp(sigma * BM_paths + (mu - 0.5 * sigma**2) * time_paths)
-    return BS_paths
 
 
 start_date = '1690-01-01'
@@ -33,6 +17,7 @@ df.set_index('Date', inplace=True)
 dt = 1/12
 mu = 0.1
 sigma = 0.2
+
 BS_paths = simulate_BS(1, dt, n_timestep-1, mu, sigma)
 path = BS_paths[0,:,0].numpy().astype(np.float64)
 df['spx'] = path
