@@ -28,7 +28,7 @@ dt = 1/365
 
 model = PDV4()
 prices, log_return, sigma, r10, r11, r20, r21, r1, r2 = model.simulate(1,n_timestep-1)
-path = prices[0,:,0].astype(np.float64)
+path = prices[0,:,0].astype(np.float64) * 450
 df['spx'] = path
 df.to_csv('data/pdv.csv')
 df = pd.read_csv('data/pdv.csv', index_col=0, parse_dates=True)
