@@ -22,17 +22,10 @@ BS_paths = simulate_BS(1, dt, n_timestep-1, mu, sigma)
 path = BS_paths[0,:,0].numpy().astype(np.float64)
 df['spx'] = path
 df.to_csv('data/bs.csv')
-# df.to_csv('data/spx.csv')
-
-# df = pd.read_csv('data/spx.csv', index_col=0, parse_dates=True)
-# df.info()
 df = pd.read_csv('data/bs.csv', index_col=0, parse_dates=True)
 df.info()
 
 
-# samples
-batch_size = 256 # number of samples in each batch
-sample_len = 61 # length of each sample
 sample_model = 'Realdt' # GBM, Heston, OU, RealData, Realdt, spx_rates
 lead_lag = False # whether to use lead lag transformation
 lags = [1] # number of lags to use for lead lag transformation: int or list[int]
@@ -41,8 +34,8 @@ seed = 42
 
 # BS
 batch_size = 64 # number of samples in each batch
-sample_len = 61 # length of each sample
-stride = 60
+sample_len = 60 # length of each sample
+stride = 59
 
 
 # signature kernel
@@ -60,7 +53,7 @@ noise_dim = 1 # dimension of noise vector
 ma = True # whether to use MA noise generator fitted to log returns gaussianized by Lambert W transformation
 ma_p = 5
 
-epochs = 1000 # number of batches
+epochs = 10000 # number of batches
 start_lr = 0.001 # starting learning rate
 patience = 100 # number of epochs to wait before reducing lr
 lr_factor = 0.5 # factor to multiply lr by for scheduler
